@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>יום אהבה שמח שקד!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; } /* מונע מסגרת אפורה בלחיצה באייפון */
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0;
+            background: #ffeef2;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .heart-bg { position: fixed; font-size: 20px; color: rgba(255, 105, 180, 0.3); z-index: -1; animation: float 6s linear infinite; }
+        @keyframes float { 0% { transform: translateY(110vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
+
+        .welcome-msg { font-size: 32px; font-weight: bold; margin-bottom: 25px; color: #d63384; text-align: center; }
+
+        .captcha-box { width: 100%; max-width: 300px; height: 74px; background: #fff; border: 1px solid #ffccd5; border-radius: 3px; display: flex; align-items: center; padding: 0 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        .checkbox { width: 24px; height: 24px; border: 2px solid #ffccd5; border-radius: 2px; background: #fff; margin-left: 12px; }
+        .label { font-size: 14px; color: #555; flex-grow: 1; user-select: none; }
+        
+        /* חלון התמונות מותאם למסך קטן */
+        #photo-grid-modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
+            z-index: 1000; width: 90%; max-width: 360px; overflow: hidden; border: 2px solid #ff4d6d; 
+        }
+        .grid-header { background: #ff4d6d; color: white; padding: 15px; text-align: right; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; background: #fff; }
+        .grid-container img { width: 100%; height: 110px; cursor: pointer; object-fit: cover; display: block; }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 999; }
+        
+        .success-content { text-align: center; width: 90%; }
+        .msg-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid #ffccd5; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<script>
+    for (let i = 0; i < 15; i++) {
+        let heart = document.createElement('div');
+        heart.className = 'heart-bg';
+        heart.innerHTML = '❤️';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        document.body.appendChild(heart);
+    }
+</script>
+
+<div class="welcome-msg">היי שקד! ❤️</div>
+
+<div class="captcha-box" id="captchaBtn">
+    <div class="checkbox"></div>
+    <div class="label">אני לא רובוט</div>
+    <div class="logo">
+        <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" width="28" style="filter: hue-rotate(310deg);"><br>
+        <span style="font-size: 9px; color: #ff4d6d;">Love-CAPTCHA</span>
+    </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div id="photo-grid-modal">
+    <div class="grid-header">
+        <div style="font-size: 12px; opacity: 0.9;">בדיקת אבטחה:</div>
+        <div style="font-size: 18px; font-weight: bold;">לחצי על הגבר שאת הכי אוהבת</div>
+    </div>
+    <div class="grid-container">
+        <img src="https://randomuser.me/api/portraits/men/10.jpg" onclick="alert('טעות... תנסי שוב!')">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" onclick="alert('ממש לא!')">
+        <img src="https://randomuser.me/api/portraits/men/45.jpg" onclick="alert('לא זה...')">
+        <img src="https://randomuser.me/api/portraits/men/22.jpg" onclick="alert('אולי מישהו אחר?')">
+        
+        <img src="profile_pic.jpg" onclick="celebrate()">
+        
+        <img src="https://randomuser.me/api/portraits/men/60.jpg" onclick="alert('קר מאוד...')">
+        <img src="https://randomuser.me/api/portraits/men/75.jpg" onclick="alert('לא!')">
+        <img src="https://randomuser.me/api/portraits/men/88.jpg" onclick="alert('תנסי שוב שקד')">
+        <img src="https://randomuser.me/api/portraits/men/15.jpg" onclick="alert('זה לא הוא')">
+    </div>
+</div>
+
+<script>
+    const btn = document.getElementById('captchaBtn');
+    const modal = document.getElementById('photo-grid-modal');
+    const overlay = document.getElementById('overlay');
+
+    btn.onclick = () => {
+        modal.style.display = 'block';
+        overlay.style.display = 'block';
+    };
+
+    function celebrate() {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            shapes: ['heart'],
+            colors: ['#ff4d6d', '#ff8fa3', '#ffffff']
+        });
+
+        setTimeout(() => {
+            document.body.innerHTML = `
+                <div class="success-content">
+                    <h1 style="color: #ff4d6d; font-size: 38px; margin: 0;">ידעתי! ❤️</h1>
+                    <div class="msg-card">
+                        <p style="font-size: 20px; color: #333; margin-bottom: 10px;">שקד המהממת,</p>
+                        <p style="font-size: 16px; color: #555; line-height: 1.6;">
+                            אני אוהב אותך הכי בעולם, יום אהבה שמח!!❤️❤️❤️
+                        </p>
+                    </div>
+                </div>
+            `;
+        }, 500);
+    }
+</script>
+
+</body>
+</html>
